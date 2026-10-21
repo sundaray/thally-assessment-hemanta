@@ -18,7 +18,7 @@ The Effect HTTP API examples were tested with `effect` and `@effect/platform-nod
 
 ## Run locally
 
-Requires Node.js 22 or later.
+Requires Node.js 22.14 or later.
 
 Clone the repository and install its dependencies:
 
