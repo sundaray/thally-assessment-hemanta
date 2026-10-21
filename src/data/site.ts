@@ -166,7 +166,6 @@ export const siteConfig: SiteConfig = {
   repoUrl: 'https://github.com/sundaray/thally-assessment-hemanta',
   links: [
     { label: 'Get started', href: '/quickstart' },
-    { label: 'Changelog', href: '/changelog' },
   ],
   brand: brandPresets[brandPreset],
   brandPreset,

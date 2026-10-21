@@ -1,0 +1,84 @@
+---
+title: Handle query parameters
+description: Define query parameters and access their validated values in an endpoint handler.
+---
+
+To accept query parameters in an Effect HTTP API endpoint, define their schemas using the `query` option. Effect HTTP API decodes and validates incoming values before passing them to the handler.
+
+## Define query parameters
+
+Consider a `GET /search` endpoint that accepts a required search term (`q`) and two optional pagination parameters (`limit` and `skip`).
+
+The following example defines these parameters using the endpoint's `query` option:
+
+```typescript title="api.ts" {10-14}
+import { Schema } from "effect";
+import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "effect/http-api";
+
+const paginationValue = Schema.NumberFromString.check(
+  Schema.isInt(),
+  Schema.isGreaterThanOrEqualTo(0),
+);
+
+const searchEndpoint = HttpApiEndpoint.get("search", "/search", {
+  query: {
+    q: Schema.String,
+    limit: Schema.optionalKey(paginationValue),
+    skip: Schema.optionalKey(paginationValue),
+  },
+  success: Schema.Struct({
+    q: Schema.String,
+    limit: Schema.Number,
+    skip: Schema.Number,
+  }),
+});
+
+const searchGroup = HttpApiGroup.make("search").add(searchEndpoint);
+
+export const api = HttpApi.make("ExampleApi").add(searchGroup);
+```
+
+Query parameters arrive as strings. `Schema.NumberFromString` decodes values such as `"2"` into the number `2`. The `Schema.isInt()` and `Schema.isGreaterThanOrEqualTo(0)` checks restrict `limit` and `skip` to non-negative integers.
+
+Although `q` is required, `Schema.String` accepts an empty string. Therefore, a request containing `?q=` passes validation. Add a minimum-length constraint if your endpoint requires a non-empty search term.
+
+## Access query parameters in the handler
+
+Effect HTTP API makes the decoded query parameters available through the argument passed to the endpoint handler. In this example, we name that argument `ctx` and access the parameters using `ctx.query`.
+
+```typescript title="handlers.ts"
+import { Effect } from "effect";
+import { HttpApiBuilder } from "effect/http-api";
+
+import { api } from "./api.js";
+
+export const searchHandlers = HttpApiBuilder.group(api, "search", (handlers) =>
+  handlers.handle("search", (ctx) =>
+    Effect.succeed({
+      q: ctx.query.q,
+      limit: ctx.query.limit ?? 10,
+      skip: ctx.query.skip ?? 0,
+    }),
+  ),
+);
+```
+
+For a request to `/search?q=phone&limit=2`, `ctx.query.q` contains the string `"phone"`, while `ctx.query.limit` contains the number `2`.
+
+The values are already decoded and validated according to the endpoint's schema. You don't need to parse them again.
+
+Because `limit` and `skip` are optional, their values can be `undefined`. The `??` operator provides defaults of `10` and `0` when these parameters are omitted, while preserving a supplied value of `0`.
+
+## Validate incoming query parameters
+
+Effect HTTP API validates query parameters before invoking the handler. If a required parameter is missing or a supplied value fails validation, it automatically returns `400 Bad Request`.
+
+For example, the following requests fail validation:
+
+| Request | Why validation fails |
+|---|---|
+| `/search?limit=2` | The required `q` parameter is missing. |
+| `/search?q=phone&limit=two` | `limit` is not a valid number. |
+| `/search?q=phone&limit=1.5` | `limit` is not an integer. |
+| `/search?q=phone&skip=-1` | `skip` cannot be negative. |
+
