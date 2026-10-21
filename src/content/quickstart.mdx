@@ -1,6 +1,8 @@
 ---
 title: Quickstart
 description: Build a GET /products endpoint that retrieves a list of products from DummyJSON.
+lastVerified: 2026-10-22
+verifiedVersion: "4.0.5"
 ---
 
 In this quickstart, you'll build a `GET /products` endpoint that retrieves a list
@@ -161,26 +163,37 @@ import {
   ProductsInvalidResponseError,
 } from "./api.js";
 
-const productsGroupLayer = HttpApiBuilder.group(ecomApi, "products", (handlers) =>
-  Effect.gen(function* () {
-    const client = (yield* HttpClient.HttpClient).pipe(HttpClient.filterStatusOk);
+const productsGroupLayer = HttpApiBuilder.group(
+  ecomApi,
+  "products",
+  (handlers) =>
+    Effect.gen(function* () {
+      const client = (yield* HttpClient.HttpClient).pipe(
+        HttpClient.filterStatusOk,
+      );
 
-    return handlers.handle("getProducts", () =>
-      client.get("https://dummyjson.com/products").pipe(
-        Effect.flatMap(HttpClientResponse.schemaBodyJson(productListSchema)),
-        Effect.catchTags({
-          SchemaError: () =>
-            Effect.fail(new ProductsInvalidResponseError({
-              message: "DummyJSON returned an unexpected products response.",
-            })),
-          HttpClientError: () =>
-            Effect.fail(new ProductsFetchError({
-              message: "Unable to retrieve products. Please try again later.",
-            })),
-        }),
-      ),
-    );
-  }),
+      return handlers.handle("getProducts", () =>
+        client.get("https://dummyjson.com/products").pipe(
+          Effect.flatMap(HttpClientResponse.schemaBodyJson(productListSchema)),
+          Effect.catchTags({
+            SchemaError: () =>
+              Effect.fail(
+                new ProductsInvalidResponseError({
+                  message:
+                    "DummyJSON returned an unexpected products response.",
+                }),
+              ),
+            HttpClientError: () =>
+              Effect.fail(
+                new ProductsFetchError({
+                  message:
+                    "Unable to retrieve products. Please try again later.",
+                }),
+              ),
+          }),
+        ),
+      );
+    }),
 ).pipe(Layer.provide(FetchHttpClient.layer));
 
 const ecomApiLayer = HttpApiBuilder.layer(ecomApi).pipe(

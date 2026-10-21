@@ -1,6 +1,8 @@
 ---
 title: Handle query parameters
 description: Define query parameters and access their validated values in an endpoint handler.
+lastVerified: 2026-10-22
+verifiedVersion: "4.0.5"
 ---
 
 To accept query parameters in an Effect HTTP API endpoint, define their schemas using the `query` option. Effect HTTP API decodes and validates incoming values before passing them to the handler.
@@ -75,10 +77,9 @@ Effect HTTP API validates query parameters before invoking the handler. If a req
 
 For example, the following requests fail validation:
 
-| Request | Why validation fails |
-|---|---|
-| `/search?limit=2` | The required `q` parameter is missing. |
-| `/search?q=phone&limit=two` | `limit` is not a valid number. |
-| `/search?q=phone&limit=1.5` | `limit` is not an integer. |
-| `/search?q=phone&skip=-1` | `skip` cannot be negative. |
-
+| Request                     | Why validation fails                   |
+| --------------------------- | -------------------------------------- |
+| `/search?limit=2`           | The required `q` parameter is missing. |
+| `/search?q=phone&limit=two` | `limit` is not a valid number.         |
+| `/search?q=phone&limit=1.5` | `limit` is not an integer.             |
+| `/search?q=phone&skip=-1`   | `skip` cannot be negative.             |

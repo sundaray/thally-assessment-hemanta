@@ -1,6 +1,5 @@
 ---
-title: Effect HTTP API
-navTitle: Introduction
+title: Introduction
 description: Build schema-first, type-safe HTTP APIs in TypeScript.
 mode: home
 ---
@@ -24,22 +23,17 @@ These schemas, together with the endpoint's HTTP method and path, form its API
 contract. The contract describes request parameters, successful responses, and
 expected errors.
 
-If you're a TypeScript developer looking to build HTTP APIs with Effect, start
-with the [Quickstart](/quickstart) to build your first API, then explore the
-[Guides](/guides/handle-query-parameters) to learn more about Effect HTTP API's
-features and capabilities.
-
 ## How Effect HTTP API works
 
 Effect HTTP API uses the following building blocks:
 
-| Concept | Responsibility |
-|---|---|
-| `HttpApiEndpoint` | Defines an endpoint's method, path, and request and response schemas. |
-| `HttpApiGroup` | Organizes related endpoints into named groups. |
-| `HttpApi` | Combines groups into the top-level API contract. |
-| `HttpApiBuilder` | Connects endpoints to their handlers and registers API routes. |
-| `Layer` | Provides dependencies and manages the resources needed to run the API. |
+| Concept           | Responsibility                                                         |
+| ----------------- | ---------------------------------------------------------------------- |
+| `HttpApiEndpoint` | Defines an endpoint's method, path, and request and response schemas.  |
+| `HttpApiGroup`    | Organizes related endpoints into named groups.                         |
+| `HttpApi`         | Combines groups into the top-level API contract.                       |
+| `HttpApiBuilder`  | Connects endpoints to their handlers and registers API routes.         |
+| `Layer`           | Provides dependencies and manages the resources needed to run the API. |
 
 You first define the API contract, then implement its handlers and provide the
 services needed to run the server.
@@ -47,3 +41,10 @@ services needed to run the server.
 When a request arrives, Effect HTTP API decodes and validates the request data,
 passes the typed values to the matching handler, and encodes the result using the
 response schema.
+
+## Next steps
+
+If you're a TypeScript developer looking to build HTTP APIs with Effect, start
+with the [Quickstart](/quickstart) to build your first API, then explore the
+[Guides](/guides/handle-query-parameters) to learn more about Effect HTTP API's
+features and capabilities.
